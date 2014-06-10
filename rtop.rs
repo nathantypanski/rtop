@@ -28,76 +28,63 @@
 
 
 #![feature(globs)]
+#![feature(phase)]
+#[phase(syntax)]
 
+extern crate regex_macros;
 extern crate regex;
 extern crate collections;
 extern crate ncurses;
 
-use ncurses::*;
 
-use collections::string::String;
-use regex::Regex;
-
-use std::io::fs;
+use std::io::timer::sleep;
+use std::comm::channel;
 use std::path::posix::Path;
 
-fn is_proc(dir: &Path) -> Option<Path> {
-    let mut result = None;
-    if dir.is_dir() {
-        let fname_str = dir.filename_str().expect("");
-        let re = match Regex::new(r"^[0-9]+$") {
-            Ok(re) => re,
-            Err(err) => fail!("{}", err),
-        };
-        result = match re.is_match(fname_str) {
-            true => Some(dir.clone()),
-            false => None,
-        };
-    }
-    result
-}
+use cpu::read_stat;
+use memory::read_meminfo;
+use screen::{screen_init, screen_die};
 
-fn read_meminfo(meminfo: &Path) -> Option<String> {
-    let mut file = fs::File::open(meminfo);
-    match file.read_to_end() {
-        Ok(bytes) => {
-            bytes.into_ascii_opt().map(|b| b.into_str())
-        },
-        Err(_) => { None },
-    }
-}
+mod processes;
+mod memory;
+mod cpu;
+mod screen;
 
 fn main() {
     let procfs: Path = from_str("/proc").expect("Must have access to procfs!");
     let meminfo: Path = from_str("/proc/meminfo").expect("Must have access to procfs!");
-    match fs::readdir(&procfs) {
-        Ok(diri) => {
-            for dir in diri.iter() {
-                match is_proc(dir) {
-                    Some(procdir) => {
-                        println!("{}", procdir.filename_display());
-                    }
-                    None => {}
-                }
-            }
+    let procstat: Path = from_str("/proc/stat").expect("Must have access to procfs!");
 
-        }
-        Err(_) => {}
-    }
     println!("{}", read_meminfo(&meminfo));
 
-  /* Start ncurses. */
-  initscr();
+    let (max_x, max_y) = screen_init();
 
-  /* Print to the back buffer. */
-  printw("Hello, world!");
+    let (sender, receiver) = channel();
 
-  /* Update the screen. */
-  refresh();
+    spawn(proc() {
+        loop {
+            let ch = ncurses::getch();
+            sender.send(ch);
+            break;
+        }
+    });
 
-  /* Wait for a key press. */
-  getch();
+    loop {
+        let cpu1 = read_stat(&procstat).expect("");
+        sleep(100);
+        let cpu2 = read_stat(&procstat).expect("");
+        sleep(300);
+        let usage: int = cpu2.usage(cpu1);
+        ncurses::mvprintw(0, 0, format!("{}", usage).as_slice());
+        ncurses::mvvline(1, 0, (' ' as u32), 10);
+        ncurses::mvvline(1, 0, ('|' as u32), (usage % 10) as i32);
 
-  /* Terminate ncurses. */
-  endwin();
+        match receiver.try_recv() {
+            Ok(_) => { break },
+            _ => {},
+        }
+        ncurses::refresh();
+    }
+
+    screen_die();
 }
