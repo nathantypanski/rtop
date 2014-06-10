@@ -43,7 +43,7 @@ use std::path::posix::Path;
 
 use cpu::read_stat;
 use memory::read_meminfo;
-use screen::{screen_init, screen_die};
+use screen::{Graph, screen_init, screen_die, draw_rect};
 
 mod processes;
 mod memory;
@@ -69,15 +69,18 @@ fn main() {
         }
     });
 
+    let mut graph: Graph = screen::Graph::new();
     loop {
         let cpu1 = read_stat(&procstat).expect("");
         sleep(100);
         let cpu2 = read_stat(&procstat).expect("");
         sleep(300);
-        let usage: int = cpu2.usage(cpu1);
+        let usage = cpu2.usage(cpu1);
+        graph.add_bar(usage as uint);
+        graph.render();
         ncurses::mvprintw(0, 0, format!("{}", usage).as_slice());
-        ncurses::mvvline(1, 0, (' ' as u32), 10);
-        ncurses::mvvline(1, 0, ('|' as u32), (usage % 10) as i32);
+        // ncurses::mvvline(1, 0, (' ' as u32), 10);
+        // ncurses::mvvline(1, 0, ('|' as u32), (usage % 10) as i32);
 
         match receiver.try_recv() {
             Ok(_) => { break },
