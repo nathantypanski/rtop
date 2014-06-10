@@ -29,19 +29,19 @@
 
 #![feature(globs)]
 #![feature(phase)]
-#[phase(syntax)]
 
-extern crate regex_macros;
 extern crate regex;
 extern crate collections;
 extern crate ncurses;
+#[phase(syntax, link)] extern crate regex_macros;
+#[phase(syntax, link)] extern crate log;
 
 
 use std::io::timer::sleep;
 use std::comm::channel;
 use std::path::posix::Path;
 
-use cpu::read_stat;
+use cpu::CpuReader;
 use memory::read_meminfo;
 use screen::{Graph, screen_init, screen_die, draw_rect};
 
@@ -70,10 +70,11 @@ fn main() {
     });
 
     let mut graph: Graph = screen::Graph::new();
+    let mut cpureader = CpuReader::new(&procstat);
     loop {
-        let cpu1 = read_stat(&procstat).expect("");
+        let cpu1 = cpureader.read_stat().expect("");
         sleep(100);
-        let cpu2 = read_stat(&procstat).expect("");
+        let cpu2 = cpureader.read_stat().expect("");
         sleep(300);
         let usage = cpu2.usage(cpu1);
         graph.add_bar(usage as uint);

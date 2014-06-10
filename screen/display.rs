@@ -13,6 +13,9 @@ pub fn screen_init() -> (i32, i32) {
     get_dimensions()
 }
 
+/*
+ * Get the display dimensions (x, y)
+ */
 pub fn get_dimensions() -> (i32, i32) {
     let mut max_x = 0;
     let mut max_y = 0;
