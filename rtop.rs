@@ -29,12 +29,13 @@
 
 #![feature(globs)]
 #![feature(phase)]
+#![allow(ctypes)]
 
 extern crate regex;
 extern crate collections;
 extern crate ncurses;
-#[phase(syntax, link)] extern crate regex_macros;
-#[phase(syntax, link)] extern crate log;
+#[phase(plugin, link)] extern crate regex_macros;
+#[phase(plugin, link)] extern crate log;
 
 
 use std::io::timer::sleep;
