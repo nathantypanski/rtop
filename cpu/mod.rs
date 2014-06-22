@@ -49,7 +49,7 @@ impl<'a> CpuReader<'a> {
                 None
             }
         };
-        self.file.seek(0, SeekSet);
+        let _ = self.file.seek(0, SeekSet);
         cpu
     }
 }

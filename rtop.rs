@@ -44,7 +44,7 @@ use std::path::posix::Path;
 
 use cpu::CpuReader;
 use memory::read_meminfo;
-use screen::{Graph, screen_init, screen_die, draw_rect};
+use screen::{Graph, screen_init, screen_die};
 
 mod processes;
 mod memory;
@@ -52,22 +52,17 @@ mod cpu;
 mod screen;
 
 fn main() {
-    let procfs: Path = from_str("/proc").expect("Must have access to procfs!");
     let meminfo: Path = from_str("/proc/meminfo").expect("Must have access to procfs!");
     let procstat: Path = from_str("/proc/stat").expect("Must have access to procfs!");
 
     println!("{}", read_meminfo(&meminfo));
 
-    let (max_x, max_y) = screen_init();
+    let (_, _) = screen_init();
 
     let (sender, receiver) = channel();
-
     spawn(proc() {
-        loop {
-            let ch = ncurses::getch();
-            sender.send(ch);
-            break;
-        }
+        let ch = ncurses::getch();
+        sender.send(ch);
     });
 
     let mut graph: Graph = screen::Graph::new();
@@ -81,8 +76,6 @@ fn main() {
         graph.add_bar(usage as uint);
         graph.render();
         ncurses::mvprintw(0, 0, format!("{}", usage).as_slice());
-        // ncurses::mvvline(1, 0, (' ' as u32), 10);
-        // ncurses::mvvline(1, 0, ('|' as u32), (usage % 10) as i32);
 
         match receiver.try_recv() {
             Ok(_) => { break },

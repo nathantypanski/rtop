@@ -32,8 +32,8 @@ impl Graph {
     }
 
     pub fn render(&mut self) {
-        let (max_x, max_y) = display::get_dimensions();
-        while (self.bars.len() > (max_x - 2) as uint) {
+        let (max_x, _) = display::get_dimensions();
+        while self.bars.len() > (max_x - 2) as uint {
             let _ = self.bars.shift();
         }
         self.linecount = 0;
