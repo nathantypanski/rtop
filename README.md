@@ -1,6 +1,5 @@
-# rtop
+# rtop ![travis-ci-status](https://travis-ci.org/nathantypanski/rtop.svg?branch=master)
 
-![travis-ci-status](https://travis-ci.org/nathantypanski/rtop.svg?branch=master)
 ![screenshot](images/graph-2014-june.png)
 
 A system monitor written in Rust.
