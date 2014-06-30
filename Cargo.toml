@@ -1,0 +1,13 @@
+[package]
+
+name = "rtop"
+version = "0.1.0"
+authors = [ "ntypanski@gmail.com" ]
+
+[[bin]]
+
+name = "rtop" # the name of the executable to generate
+
+[dependencies.ncurses]
+
+git = "https://github.com/nathantypanski/ncurses-rs.git"

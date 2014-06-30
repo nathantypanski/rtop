@@ -1,4 +1,4 @@
-PROGRAM_NAME = rtop
+PROGRAM_NAME = src/rtop
 
 all: $(PROGRAM_NAME)
 
