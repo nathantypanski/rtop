@@ -30,7 +30,7 @@ impl<'a> CpuReader<'a> {
             .take_while(|c| c != &('\n' as u8))
             .map(|c| c.to_ascii())
             .collect();
-        let contents = contents_bytes.into_str();
+        let contents = contents_bytes.into_string();
         debug!("{}", contents);
         let re = regex!(r"cpu\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+).*");
         let cpu = match re.captures(contents.as_slice()) {
