@@ -4,4 +4,7 @@ before_install:
 install:
   - sudo apt-get install rust-nightly
 script:
-    - cd ncurses-rs && make && cd .. && make
+    - cd ncurses-rs
+    - make
+    - cd ..
+    - make
