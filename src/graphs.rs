@@ -5,11 +5,6 @@ use ncurses;
 
 use display;
 
-#[deriving (Clone)]
-pub struct Bar {
-    ratio: i32,
-}
-
 pub fn hook(rx: Receiver<int>) -> Sender<uint> {
     let (shutdown_tx, shutdown_rx) = comm::channel();
     spawn(proc() {
@@ -24,7 +19,13 @@ pub fn hook(rx: Receiver<int>) -> Sender<uint> {
     shutdown_tx
 }
 
-pub fn render(mut bars: Box<Vec<Bar>>) {
+#[deriving (Clone)]
+struct Bar {
+    ratio: i32,
+}
+
+
+fn render(mut bars: Box<Vec<Bar>>) {
     let (max_x, _) = display::get_dimensions();
     while bars.len() > (max_x - 2) as uint {
         let _ = bars.shift();
@@ -36,7 +37,6 @@ pub fn render(mut bars: Box<Vec<Bar>>) {
         draw_bar(&bar.clone(), (linecount) as i32);
         linecount += 1;
     }
-    linecount = 0;
     ncurses::refresh();
 }
 
@@ -47,7 +47,7 @@ fn draw_bar(bar: &Bar, linecount: i32) {
     ncurses::mvvline(yoffset + yloc, linecount, ('|' as u32), bar.ratio);
 }
 
-pub fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32) {
+fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32) {
     ncurses::mvhline(y1, x1, ('-' as u32), x2 - x1);
     ncurses::mvhline(y2, x1, ('-' as u32), x2 - x1);
     ncurses::mvvline(y1, x1, ('|' as u32), y2 - y1 + 1);
@@ -59,7 +59,7 @@ pub fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32) {
     ncurses::refresh();
 }
 
-pub fn draw_rect_fill(x1: i32, y1: i32, x2: i32, y2: i32) {
+fn draw_rect_fill(x1: i32, y1: i32, x2: i32, y2: i32) {
     for y in range(y1, y2) {
         ncurses::mvhline(y, x1, (' ' as u32), x2 - x1);
     }

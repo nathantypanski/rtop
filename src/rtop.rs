@@ -42,8 +42,6 @@ use std::comm::channel;
 use std::path::posix::Path;
 
 use cpu::CpuReader;
-use memory::read_meminfo;
-use display::{screen_init, screen_die};
 
 mod processes;
 mod memory;
@@ -52,11 +50,11 @@ mod graphs;
 mod display;
 
 fn main() {
-    let meminfo: Path = from_str("/proc/meminfo").expect("Must have access to procfs!");
-    let procstat: Path = from_str("/proc/stat").expect("Must have access to procfs!");
+    let procfs = from_str::<Path>("/proc").unwrap();
+    let meminfo = procfs.join(from_str::<Path>("meminfo").unwrap());
+    let procstat = procfs.join(from_str::<Path>("/proc/stat").unwrap());
 
-
-    let (_, _) = screen_init();
+    let (_, _) = display::screen_init();
 
     let (keypress_tx, keypress_rx) = channel();
     spawn(proc() {
@@ -70,6 +68,6 @@ fn main() {
     };
     keypress_rx.recv();
     cpu_sd.send(1u);
-    screen_die();
-    println!("{}", read_meminfo(&meminfo));
+    display::screen_die();
+    println!("{}", processes::read_processes(&procfs));
 }

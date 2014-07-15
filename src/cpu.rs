@@ -1,12 +1,9 @@
-extern crate log;
 use std::num;
-use std::owned::Box;
-use std::io::{BufferedReader, File, Open, Read, SeekSet};
+use std::io::{File, Open, Read, SeekSet};
 use std::comm::Receiver;
 use std::ascii::AsciiCast;
 use std::comm;
 use std::io::timer;
-use log;
 
 pub struct CpuReader<'a> {
     path: &'a Path,
@@ -25,7 +22,7 @@ impl<'a> CpuReader<'a> {
         spawn(proc() {
             let mut file = match File::open_mode(&path, Open, Read) {
                 Ok(file) => { file }
-                Err(e) => { fail!("Couldn't open CPU in procfs!") }
+                Err(_) => { fail!("Couldn't open CPU in procfs!") }
             };
             let file = &mut file;
             loop {
