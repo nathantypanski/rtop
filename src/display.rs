@@ -27,5 +27,7 @@ pub fn get_dimensions() -> (i32, i32) {
  * Display teardown.
  */
 pub fn screen_die() {
+    ncurses::refresh();
     ncurses::endwin();
+    println!("Closed successfully");
 }

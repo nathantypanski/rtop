@@ -55,7 +55,6 @@ fn main() {
     let meminfo: Path = from_str("/proc/meminfo").expect("Must have access to procfs!");
     let procstat: Path = from_str("/proc/stat").expect("Must have access to procfs!");
 
-    println!("{}", read_meminfo(&meminfo));
 
     let (_, _) = screen_init();
 
@@ -71,6 +70,6 @@ fn main() {
     };
     keypress_rx.recv();
     cpu_sd.send(1u);
-    ncurses::refresh();
     screen_die();
+    println!("{}", read_meminfo(&meminfo));
 }

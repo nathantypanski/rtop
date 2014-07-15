@@ -14,11 +14,10 @@ pub fn hook(rx: Receiver<int>) -> Sender<uint> {
     let (shutdown_tx, shutdown_rx) = comm::channel();
     spawn(proc() {
         let mut bars = box Vec::new();
-        ncurses::refresh();
         loop {
-            if shutdown_rx.try_recv().is_ok() { break }
             let value = rx.recv();
             bars.push(Bar { ratio: (value / 10) as i32 });
+            if shutdown_rx.try_recv().is_ok() { break }
             render(bars.clone());
         }
     });
