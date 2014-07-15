@@ -21,12 +21,12 @@ pub fn hook(rx: Receiver<int>, title: Option<String>) -> Sender<uint> {
 
 fn render(mut bars: Box<Vec<i32>>, title: Option<String>) {
     let (max_x, _) = display::get_dimensions();
-    while bars.len() > (max_x - 2) as uint {
+    while bars.len() > (max_x - 3) as uint {
         let _ = bars.shift();
     }
     let mut linecount = 0u;
-    draw_rect_fill(0, 1, max_x, 11);
-    draw_rect(0, 1, max_x, 12, title);
+    draw_rect_fill(1, 0, max_x, 12);
+    draw_rect(1, 0, max_x, 12, title);
     for ref mut bar in bars.iter() {
         draw_bar(bar.clone(), linecount as i32);
         linecount += 1;
@@ -38,7 +38,18 @@ fn draw_bar(bar: i32, linecount: i32) {
     let height = 10;
     let yoffset = 2;
     let yloc = height - bar;
-    ncurses::mvvline(yoffset + yloc, linecount, ('|' as u32), bar);
+    //let graph_char = (' ' as u32 | ncurses::A_REVERSE as u32);
+    //let graph_char = (0x2588 as u32);
+    //let graph_char = '█' as u32;
+    let graph_char = ' ' as u32;
+    let color = match bar {
+        x if x > 7 => 5,
+        x if x > 4 => 7,
+        _ => 3,
+    };
+    ncurses::attron(ncurses::COLOR_PAIR(color));
+    ncurses::mvvline(yoffset + yloc, linecount + 2, graph_char, bar);
+    ncurses::attroff(ncurses::COLOR_PAIR(color));
 }
 
 fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32, title: Option<String>) {
@@ -62,7 +73,6 @@ fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32, title: Option<String>) {
     ncurses::mvaddch(y2, x1, '+' as u32);
     ncurses::mvaddch(y2, x2 - 1, '+' as u32);
     ncurses::mvaddch(y1, x2 - 1, '+' as u32);
-    ncurses::refresh();
 }
 
 fn draw_rect_fill(x1: i32, y1: i32, x2: i32, y2: i32) {

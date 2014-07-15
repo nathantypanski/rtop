@@ -5,7 +5,7 @@ use std::ascii::AsciiCast;
 use std::comm;
 use std::io::timer;
 
-static CPU_POLL_SLEEP: u64 = 100u64;
+static CPU_POLL_SLEEP: u64 = 1000u64;
 
 pub struct CpuReader<'a> {
     path: &'a Path,
