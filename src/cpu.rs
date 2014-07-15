@@ -5,6 +5,8 @@ use std::ascii::AsciiCast;
 use std::comm;
 use std::io::timer;
 
+static CPU_POLL_SLEEP: u64 = 1000u64;
+
 pub struct CpuReader<'a> {
     path: &'a Path,
 }
@@ -26,9 +28,9 @@ impl<'a> CpuReader<'a> {
             };
             let file = &mut file;
             loop {
-                let cpu1 = read_stat(file).expect("");
-                timer::sleep(1000);
-                let cpu2 = read_stat(file).expect("");
+                let cpu1 = read_stat(file);
+                timer::sleep(CPU_POLL_SLEEP);
+                let cpu2 = read_stat(file);
                 let usage = cpu2.usage(cpu1);
                 if tx.send_opt(usage).is_err() { break }
             }
@@ -38,31 +40,31 @@ impl<'a> CpuReader<'a> {
 
 }
 
-pub fn read_stat(file: &mut File) -> Option<Cpu> {
-    let bytes = file.read_to_end().unwrap();
-    let move_bytes = bytes.move_iter();
-    let contents_bytes: Vec<Ascii> = move_bytes
+pub fn read_stat(file: &mut File) -> Cpu {
+    let bytes: Vec<u8> = file.read_to_end().unwrap();
+    let contents: Vec<String> = bytes
+        .move_iter()
         .take_while(|c| c != &('\n' as u8))
         .map(|c| c.to_ascii())
+        .collect::<Vec<_>>()
+        .into_string()
+        .as_slice()
+        .split(' ')
+        .filter_map(|a|
+            if a.len() > 0 {
+                Some(a.trim_chars(' ').into_string()) }
+            else {
+                None
+            })
         .collect();
-    let contents = contents_bytes.into_string();
-    let re = regex!(r"cpu\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+).*");
-    let cpu = match re.captures(contents.as_slice()) {
-        Some(matches) => {
-            Some(Cpu::new(
-                num::from_str_radix(matches.at(1), 10).expect(""), // user
-                num::from_str_radix(matches.at(2), 10).expect(""), // nice
-                num::from_str_radix(matches.at(3), 10).expect(""), // system
-                num::from_str_radix(matches.at(4), 10).expect(""), // idle
-                num::from_str_radix(matches.at(5), 10).expect(""), // iowait
-                num::from_str_radix(matches.at(6), 10).expect(""), // irq
-                num::from_str_radix(matches.at(7), 10).expect("")) // softirq
-                 )
-        },
-        None => {
-            None
-        }
-    };
+    let cpu = Cpu::new(
+                num::from_str_radix(contents.get(1).as_slice(), 10).unwrap(),  // user
+                num::from_str_radix(contents.get(2).as_slice(), 10).unwrap(),  // nice
+                num::from_str_radix(contents.get(3).as_slice(), 10).unwrap(),  // system
+                num::from_str_radix(contents.get(4).as_slice(), 10).unwrap(),  // idle
+                num::from_str_radix(contents.get(5).as_slice(), 10).unwrap(),  // iowait
+                num::from_str_radix(contents.get(6).as_slice(), 10).unwrap(),  // irq
+                num::from_str_radix(contents.get(7).as_slice(), 10).unwrap()); // softirq
     let _ = file.seek(0, SeekSet);
     cpu
 }
@@ -81,8 +83,15 @@ pub struct Cpu {
 }
 
 impl Cpu {
-    pub fn new(user: int, nice: int, system: int, idle: int,
-               iowait: int, irq: int, softirq: int) -> Cpu {
+    pub fn new(user: int,
+               nice: int,
+               system: int,
+               idle: int,
+               iowait: int,
+               irq: int,
+               softirq: int)
+               -> Cpu
+    {
         let total = user + nice + system + idle + iowait + irq + softirq;
         let work = user + nice + system;
         Cpu {

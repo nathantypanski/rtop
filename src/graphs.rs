@@ -11,7 +11,7 @@ pub fn hook(rx: Receiver<int>) -> Sender<uint> {
         let mut bars = box Vec::new();
         loop {
             let value = rx.recv();
-            bars.push(Bar { ratio: (value / 10) as i32 });
+            bars.push((value / 10) as i32 );
             if shutdown_rx.try_recv().is_ok() { break }
             render(bars.clone());
         }
@@ -19,13 +19,7 @@ pub fn hook(rx: Receiver<int>) -> Sender<uint> {
     shutdown_tx
 }
 
-#[deriving (Clone)]
-struct Bar {
-    ratio: i32,
-}
-
-
-fn render(mut bars: Box<Vec<Bar>>) {
+fn render(mut bars: Box<Vec<i32>>) {
     let (max_x, _) = display::get_dimensions();
     while bars.len() > (max_x - 2) as uint {
         let _ = bars.shift();
@@ -34,17 +28,17 @@ fn render(mut bars: Box<Vec<Bar>>) {
     draw_rect_fill(0, 1, max_x, 11);
     draw_rect(0, 1, max_x, 12);
     for ref mut bar in bars.iter() {
-        draw_bar(&bar.clone(), (linecount) as i32);
+        draw_bar(bar.clone(), linecount as i32);
         linecount += 1;
     }
     ncurses::refresh();
 }
 
-fn draw_bar(bar: &Bar, linecount: i32) {
+fn draw_bar(bar: i32, linecount: i32) {
     let height = 10;
     let yoffset = 2;
-    let yloc = height - bar.ratio;
-    ncurses::mvvline(yoffset + yloc, linecount, ('|' as u32), bar.ratio);
+    let yloc = height - bar;
+    ncurses::mvvline(yoffset + yloc, linecount, ('|' as u32), bar);
 }
 
 fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32) {
