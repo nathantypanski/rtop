@@ -41,11 +41,9 @@ extern crate ncurses;
 use std::comm::channel;
 use std::path::posix::Path;
 
-use cpu::CpuReader;
+use procfs::cpu::CpuReader;
 
-mod processes;
-mod memory;
-mod cpu;
+mod procfs;
 mod graphs;
 mod display;
 
@@ -64,10 +62,10 @@ fn main() {
 
     let cpu_sd = {
         let mut cpureader = CpuReader::new(&procstat);
-        graphs::hook(cpureader.listen())
+        graphs::hook(cpureader.listen(), Some("CPU".to_string()))
     };
     keypress_rx.recv();
     cpu_sd.send(1u);
     display::screen_die();
-    println!("{}", processes::read_processes(&procfs));
+    //println!("{}", processes::read_processes(&procfs));
 }

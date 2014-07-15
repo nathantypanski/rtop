@@ -5,7 +5,7 @@ use std::ascii::AsciiCast;
 use std::comm;
 use std::io::timer;
 
-static CPU_POLL_SLEEP: u64 = 1000u64;
+static CPU_POLL_SLEEP: u64 = 100u64;
 
 pub struct CpuReader<'a> {
     path: &'a Path,
@@ -22,10 +22,7 @@ impl<'a> CpuReader<'a> {
         let path = self.path.clone();
         let (tx, rx) = comm::channel();
         spawn(proc() {
-            let mut file = match File::open_mode(&path, Open, Read) {
-                Ok(file) => { file }
-                Err(_) => { fail!("Couldn't open CPU in procfs!") }
-            };
+            let mut file = File::open_mode(&path, Open, Read).unwrap();
             let file = &mut file;
             loop {
                 let cpu1 = read_stat(file);
