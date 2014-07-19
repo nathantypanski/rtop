@@ -13,7 +13,7 @@ pub fn hook(rx: Receiver<int>, title: Option<String>) -> Sender<uint> {
             let value = rx.recv();
             bars.push((value / 10) as i32 );
             if shutdown_rx.try_recv().is_ok() { break }
-            render(bars.clone(), title.clone());
+            render(bars.clone(), title.clone().map(|x| x + ": " + value.to_string()));
         }
     });
     shutdown_tx
@@ -38,10 +38,7 @@ fn draw_bar(bar: i32, linecount: i32) {
     let height = 10;
     let yoffset = 2;
     let yloc = height - bar;
-    //let graph_char = (' ' as u32 | ncurses::A_REVERSE as u32);
-    //let graph_char = (0x2588 as u32);
-    //let graph_char = '█' as u32;
-    let graph_char = ' ' as u32;
+    let graph_char = '|' as u32;
     let color = match bar {
         x if x > 7 => 5,
         x if x > 4 => 7,
