@@ -67,5 +67,4 @@ fn main() {
     keypress_rx.recv();
     cpu_sd.send(1u);
     display::screen_die();
-    //println!("{}", processes::read_processes(&procfs));
 }
