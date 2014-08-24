@@ -4,12 +4,7 @@
 
 A system monitor written in Rust.
 
-To build and run:
-
-    make
-    make run
-
-Or, if you have cargo,
+You can build it by just running
 
     cargo build
 
