@@ -36,12 +36,3 @@ pub fn read_processes(procfs: &Path) {
         Err(_) => {}
     }
 }
-
-#[cfg(test)]
-mod test{
-    use super::*;
-
-    #[test]
-    fn test_is_proc() {
-    }
-}
