@@ -22,7 +22,7 @@ pub fn hook(rx: Receiver<int>, title: Option<String>) -> Sender<uint> {
 fn render(mut bars: Box<Vec<i32>>, title: Option<String>) {
     let (max_x, _) = display::get_dimensions();
     while bars.len() > (max_x - 3) as uint {
-        let _ = bars.shift();
+        let _ = bars.remove(0);
     }
     let mut linecount = 0u;
     draw_rect_fill(1, 0, max_x, 12);
@@ -55,7 +55,6 @@ fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32, title: Option<String>) {
     match title {
         Some(title) => {
             let title_lspace = 3i32;
-            let title_pad = 1i32;
             ncurses::mvprintw(y2,
                               x1 + title_lspace,
                               ("[".to_string() + title + "]".to_string())
