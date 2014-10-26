@@ -1,12 +1,13 @@
 use regex::Regex;
 use std::io::fs;
+use std::io::fs::PathExtensions;
 
 /*
  * Returns true if the path is to a process's addr in procfs.
  */
 fn is_proc(dir: &Path) -> Option<Path> {
     let mut result = None;
-    if dir.is_dir() {
+    if (*dir).is_dir() {
         let fname_str = dir.filename_str().expect("");
         let re = match Regex::new(r"^[0-9]+$") {
             Ok(re) => re,

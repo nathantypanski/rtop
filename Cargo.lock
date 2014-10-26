@@ -2,11 +2,11 @@
 name = "rtop"
 version = "0.1.0"
 dependencies = [
- "ncurses 5.71.1 (git+https://github.com/jeaye/ncurses-rs.git#099327f8229c2887ae73bb22d28b97f33a1dda4d)",
+ "ncurses 5.71.1 (git+https://github.com/jeaye/ncurses-rs.git#e839970267fc1fb8dad3658c04e968bcc546ae18)",
 ]
 
 [[package]]
 name = "ncurses"
 version = "5.71.1"
-source = "git+https://github.com/jeaye/ncurses-rs.git#099327f8229c2887ae73bb22d28b97f33a1dda4d"
+source = "git+https://github.com/jeaye/ncurses-rs.git#e839970267fc1fb8dad3658c04e968bcc546ae18"
 
