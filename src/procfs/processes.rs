@@ -11,7 +11,7 @@ fn is_proc(dir: &Path) -> Option<Path> {
         let fname_str = dir.filename_str().expect("");
         let re = match Regex::new(r"^[0-9]+$") {
             Ok(re) => re,
-            Err(err) => fail!("{}", err),
+            Err(err) => panic!("{}", err),
         };
         result = match re.is_match(fname_str) {
             true => Some(dir.clone()),
