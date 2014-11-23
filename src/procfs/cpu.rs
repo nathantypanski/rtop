@@ -38,9 +38,10 @@ impl<'a> CpuReader<'a> {
 
 pub fn read_stat(file: &mut File) -> Cpu {
     let bytes: Vec<u8> = file.read_to_end().unwrap();
+    let newline = &&('\n' as u8);
     let contents: Vec<String> = bytes
         .iter()
-        .take_while(|c| c != &&('\n' as u8))
+        .take_while(|c| c != newline)
         .map(|c| c.to_ascii())
         .collect::<Vec<_>>()
         .into_string()
