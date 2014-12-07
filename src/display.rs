@@ -8,7 +8,7 @@ pub fn screen_init() -> (i32, i32) {
     ncurses::raw();
     ncurses::keypad(ncurses::stdscr, true);
     ncurses::noecho();
-    ncurses::curs_set(ncurses::CURSOR_INVISIBLE);
+    ncurses::curs_set(ncurses::CURSOR_VISIBILITY::CURSOR_INVISIBLE);
     ncurses::start_color();
     ncurses::init_pair(1, ncurses::COLOR_WHITE, ncurses::COLOR_WHITE);
     ncurses::init_pair(2, ncurses::COLOR_BLUE, ncurses::COLOR_BLUE);
