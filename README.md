@@ -1,4 +1,4 @@
-# rtop ![travis-ci-status](https://travis-ci.org/nathantypanski/rtop.svg?branch=master)
+# rtop [![Build Status](https://travis-ci.org/nathantypanski/rtop.svg?branch=master)](https://travis-ci.org/nathantypanski/rtop)
 
 ![screenshot](images/graph-2014-july.png)
 
