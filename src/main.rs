@@ -39,7 +39,6 @@ extern crate ncurses;
 
 use std::comm::channel;
 use std::path::posix::Path;
-use std::thread::Thread;
 
 use procfs::cpu::CpuReader;
 
@@ -55,7 +54,7 @@ fn main() {
     let (_, _) = display::screen_init();
 
     let (keypress_tx, keypress_rx) = channel();
-    Thread::spawn(move || {
+    spawn(move || {
         let ch = ncurses::getch();
         keypress_tx.send(ch);
     });

@@ -1,6 +1,5 @@
 use std::vec::Vec;
 use std::comm;
-use std::thread::Thread;
 
 use ncurses;
 
@@ -8,7 +7,7 @@ use display;
 
 pub fn hook(rx: Receiver<int>, title: Option<String>) -> Sender<uint> {
     let (shutdown_tx, shutdown_rx) = comm::channel();
-    Thread::spawn(move || {
+    spawn(move || {
         let mut bars = box Vec::new();
         loop {
             let value = rx.recv();
