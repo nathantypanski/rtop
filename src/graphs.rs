@@ -1,5 +1,6 @@
 use std::vec::Vec;
 use std::comm;
+use std::thread::Thread;
 
 use ncurses;
 
@@ -7,13 +8,13 @@ use display;
 
 pub fn hook(rx: Receiver<int>, title: Option<String>) -> Sender<uint> {
     let (shutdown_tx, shutdown_rx) = comm::channel();
-    spawn(proc() {
+    Thread::spawn(move || {
         let mut bars = box Vec::new();
         loop {
             let value = rx.recv();
             bars.push((value / 10) as i32 );
             if shutdown_rx.try_recv().is_ok() { break }
-            render(bars.clone(), title.clone().map(|x| x + ": " + value.to_string()));
+            render(bars.clone(), title.clone().map(|x| x + ": " + value.to_string().as_slice()));
         }
     });
     shutdown_tx
@@ -57,7 +58,7 @@ fn draw_rect(x1: i32, y1: i32, x2: i32, y2: i32, title: Option<String>) {
             let title_lspace = 3i32;
             ncurses::mvprintw(y2,
                               x1 + title_lspace,
-                              ("[".to_string() + title + "]".to_string())
+                              ("[" + title + "]")
                               .as_slice()
                               );
         }

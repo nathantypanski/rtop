@@ -10,4 +10,4 @@ name = "rtop" # the name of the executable to generate
 
 [dependencies.ncurses]
 
-git = "https://github.com/jeaye/ncurses-rs.git"
+git = "https://github.com/nathantypanski/ncurses-rs"

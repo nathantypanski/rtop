@@ -20,7 +20,7 @@ impl<'a> CpuReader<'a> {
     pub fn listen(&mut self) -> Receiver<int> {
         let path = self.path.clone();
         let (tx, rx) = comm::channel();
-        spawn(proc() {
+        spawn(move || {
             let mut file = File::open_mode(&path, Open, Read).unwrap();
             let file = &mut file;
             loop {
